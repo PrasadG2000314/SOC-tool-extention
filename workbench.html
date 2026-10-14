@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOC Tier 3 Threat Hunter Console (Full-Screen Workbench)</title>
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    .app-content {
+      max-width: 1600px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <img src="icons/icon48.png" alt="SOC T3" class="brand-icon">
+        <div>
+          <div class="brand-title">
+            <span>SOC T3 HUNTER // WORKBENCH</span>
+            <span class="pulse-indicator" title="Threat Hunting Engine Online"></span>
+          </div>
+          <div class="brand-sub">Tier 3 Threat Hunter & Incident Responder Console</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-settings" class="btn btn-secondary" title="Engine & AI Settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Settings</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-content">
+      <!-- Ingestion Panel -->
+      <section class="glass-panel ingest-panel">
+        <div class="ingest-top">
+          <div class="ingest-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--cyber-cyan)" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            <span>Raw Security Telemetry Ingestion</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <select id="preset-selector" class="preset-dropdown">
+              <option value="">⚡ Load Enterprise Preset...</option>
+            </select>
+            <button id="btn-clear-telemetry" class="btn btn-secondary" style="padding:4px 8px; font-size:11px;">Clear</button>
+          </div>
+        </div>
+
+        <div class="telemetry-input-wrap">
+          <textarea id="telemetry-input" class="telemetry-textarea" placeholder="Paste raw security telemetry here (Wazuh alert JSON, Windows Sysmon XML/EVTX, Snort/Suricata, Linux auditd, or obfuscated PowerShell command line)..."></textarea>
+        </div>
+
+        <div class="ingest-actions">
+          <div id="telemetry-meta" class="telemetry-meta">0 characters | Standing by</div>
+          <button id="btn-analyze" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            <span>Initiate Tier 3 Hunt & Triage</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Active Triage Results Container -->
+      <div id="results-area" style="display:none; flex-direction:column; gap:16px;">
+        <!-- Verdict Banner -->
+        <section id="verdict-banner" class="verdict-banner status-tp">
+          <div>
+            <div class="verdict-title">
+              <span id="verdict-badge" class="badge badge-tp">TRUE POSITIVE</span>
+              <span id="threat-name">Cobalt Strike / Process Hollowing</span>
+            </div>
+            <div id="verdict-justification" style="margin-top:6px; font-size:12px; color:var(--text-secondary); max-width:800px;">
+              Validated high-fidelity threat activity exhibiting unauthorized command execution.
+            </div>
+          </div>
+          <div class="banner-stats">
+            <div class="stat-item">
+              <span id="stat-iocs" class="stat-val">0</span>
+              <span class="stat-lbl">Observables</span>
+            </div>
+            <div class="stat-item">
+              <span id="stat-mitre" class="stat-val">0</span>
+              <span class="stat-lbl">MITRE TTPs</span>
+            </div>
+            <div class="stat-item">
+              <span id="stat-entropy" class="stat-val">0.0</span>
+              <span class="stat-lbl">Entropy</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Framework 5-Step Navigation Tabs -->
+        <nav class="framework-tabs">
+          <button class="tab-btn active" data-tab="tab-1">
+            <span class="tab-num">1</span>
+            <span>Alert Decomposition & IoCs</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-2">
+            <span class="tab-num">2</span>
+            <span>Detection & Triage</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-3">
+            <span class="tab-num">3</span>
+            <span>Root Cause & Exploit Chain</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-4">
+            <span class="tab-num">4</span>
+            <span>Verdict & Containment</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-5">
+            <span class="tab-num">5</span>
+            <span>Final Incident Report</span>
+          </button>
+        </nav>
+
+        <!-- Tab 1: Deep Alert Decomposition & IoC Extraction -->
+        <div id="tab-1" class="tab-content active">
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Executive Summary</span>
+              </div>
+            </div>
+            <div id="summary-text" style="font-size:13px; color:#e2e8f0; line-height:1.6;"></div>
+          </section>
+
+          <!-- Observables Grid -->
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Advanced Observables</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="font-size:11px; color:var(--text-secondary); cursor:pointer;">
+                  <input type="checkbox" id="toggle-defang" checked> Defang Network IoCs
+                </label>
+              </div>
+            </div>
+            <div class="ioc-grid">
+              <div class="ioc-box">
+                <div class="ioc-box-title">
+                  <span>Network IPs</span>
+                  <span id="count-ips" class="badge badge-cyan">0</span>
+                </div>
+                <div id="list-ips" class="ioc-list"></div>
+              </div>
+              <div class="ioc-box">
+                <div class="ioc-box-title">
+                  <span>Domains & URLs</span>
+                  <span id="count-domains" class="badge badge-cyan">0</span>
+                </div>
+                <div id="list-domains" class="ioc-list"></div>
+              </div>
+              <div class="ioc-box">
+                <div class="ioc-box-title">
+                  <span>Cryptographic Hashes</span>
+                  <span id="count-hashes" class="badge badge-cyan">0</span>
+                </div>
+                <div id="list-hashes" class="ioc-list"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Entropy & Obfuscation -->
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Entropy & Payload Obfuscation Analysis</span>
+              </div>
+            </div>
+            <div class="entropy-meter-wrap">
+              <div style="font-size:12px; font-weight:600; min-width:110px;">Shannon Entropy:</div>
+              <div class="entropy-bar-track">
+                <div id="entropy-fill" class="entropy-bar-fill" style="width: 50%;"></div>
+              </div>
+              <div id="entropy-value-display" class="entropy-val">0.00 / 8.0</div>
+            </div>
+            <div id="decoded-base64-area" style="margin-top:12px; display:none;">
+              <div style="font-size:11px; color:var(--cyber-cyan); margin-bottom:6px; font-family:var(--font-mono);">
+                ⚡ DECODED IN-MEMORY STAGE-1 PAYLOAD:
+              </div>
+              <pre id="decoded-base64-content" class="code-block"></pre>
+            </div>
+          </section>
+
+          <!-- MITRE & Attribution -->
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>MITRE ATT&CK Matrix & Attribution Hypothesis</span>
+              </div>
+            </div>
+            <div id="mitre-tags-container" class="mitre-tags-list" style="margin-bottom:14px;"></div>
+            <div id="attribution-box" style="background:var(--bg-inset); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-dimmed); margin-bottom:4px;">Threat Actor / Framework Profile:</div>
+              <div id="attribution-title" style="font-size:14px; font-weight:700; color:var(--cyber-cyan);"></div>
+              <ul id="attribution-indicators" style="margin-top:8px; padding-left:18px; color:var(--text-secondary); font-size:12px;"></ul>
+            </div>
+          </section>
+        </div>
+
+        <!-- Tab 2: Advanced Detection & Triage -->
+        <div id="tab-2" class="tab-content">
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Telemetry Analysis & Decoder Triggers</span>
+              </div>
+            </div>
+            <div id="telemetry-mechanism" style="font-size:13px; color:#e2e8f0; line-height:1.6;"></div>
+          </section>
+
+          <!-- Hunting Queries -->
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Threat Hunting Queries (SIEM)</span>
+              </div>
+              <div class="query-nav">
+                <button class="subtab-btn active" data-query="splunk">Splunk SPL</button>
+                <button class="subtab-btn" data-query="kql">Defender / KQL</button>
+                <button class="subtab-btn" data-query="elastic">Elastic Lucene / EQL</button>
+              </div>
+            </div>
+            <div style="position:relative;">
+              <pre id="query-content" class="code-block" style="min-height:110px;"></pre>
+              <button id="btn-copy-query" class="btn btn-secondary" style="position:absolute; top:8px; right:8px; padding:4px 8px; font-size:11px;">
+                Copy Query
+              </button>
+            </div>
+          </section>
+
+          <!-- PCAP Correlation -->
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Network & PCAP Correlation Guide</span>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <div style="font-size:11px; color:var(--text-dimmed); text-transform:uppercase; margin-bottom:4px;">Wireshark Display Filter:</div>
+              <div style="position:relative;">
+                <pre id="wireshark-filter" class="code-block" style="padding:8px;"></pre>
+                <button id="btn-copy-wireshark" class="btn btn-secondary" style="position:absolute; top:6px; right:6px; padding:3px 6px; font-size:10px;">Copy</button>
+              </div>
+            </div>
+            <div id="pcap-guidance-text" style="font-size:12px; color:var(--text-secondary); line-height:1.6;"></div>
+          </section>
+        </div>
+
+        <!-- Tab 3: Root Cause & Exploit Chain -->
+        <div id="tab-3" class="tab-content">
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Attack Vector Analysis & Kill Chain</span>
+              </div>
+            </div>
+            <div id="attack-vector-text" style="font-size:13px; color:#e2e8f0; line-height:1.6; margin-bottom:14px;"></div>
+            <div id="timeline-steps" class="timeline-track"></div>
+          </section>
+
+          <!-- LOLBins Table -->
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Living-off-the-Land Binaries (LOLBins) Inspected</span>
+              </div>
+            </div>
+            <div id="lolbins-container"></div>
+          </section>
+
+          <!-- Impact & Blast Radius -->
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Impact & Blast Radius Scope</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+              <div style="background:var(--bg-inset); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-size:11px; text-transform:uppercase; color:var(--text-dimmed);">Compromise Level:</div>
+                <div id="privilege-level-val" style="font-size:14px; font-weight:700; color:var(--cyber-crimson); margin-top:4px;"></div>
+              </div>
+              <div style="background:var(--bg-inset); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-size:11px; text-transform:uppercase; color:var(--text-dimmed);">Blast Radius Boundary:</div>
+                <div id="blast-radius-val" style="font-size:14px; font-weight:700; color:var(--cyber-amber); margin-top:4px;"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Tab 4: Verdict, Containment & Automation Approval -->
+        <div id="tab-4" class="tab-content">
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Analyst Verdict & Technical Rationale</span>
+              </div>
+            </div>
+            <div id="verdict-detailed-box" style="font-size:13px; color:#e2e8f0; line-height:1.6;"></div>
+          </section>
+
+          <!-- Containment Commands -->
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Immediate Containment Execution Snippets</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div>
+                <div style="font-size:11px; color:var(--cyber-cyan); margin-bottom:4px; font-weight:600;">EDR / Host Network Isolation:</div>
+                <div style="position:relative;">
+                  <pre id="contain-edr" class="code-block"></pre>
+                  <button class="btn btn-secondary btn-copy-snippet" data-target="contain-edr" style="position:absolute; top:6px; right:6px; padding:3px 6px; font-size:10px;">Copy</button>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:11px; color:var(--cyber-cyan); margin-bottom:4px; font-weight:600;">Active Directory Identity Revocation:</div>
+                <div style="position:relative;">
+                  <pre id="contain-ad" class="code-block"></pre>
+                  <button class="btn btn-secondary btn-copy-snippet" data-target="contain-ad" style="position:absolute; top:6px; right:6px; padding:3px 6px; font-size:10px;">Copy</button>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:11px; color:var(--cyber-cyan); margin-bottom:4px; font-weight:600;">Edge / Perimeter Null-Route:</div>
+                <div style="position:relative;">
+                  <pre id="contain-nullroute" class="code-block"></pre>
+                  <button class="btn btn-secondary btn-copy-snippet" data-target="contain-nullroute" style="position:absolute; top:6px; right:6px; padding:3px 6px; font-size:10px;">Copy</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Custom Detection Engineering -->
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Custom Detection Engineering (Sigma & YARA)</span>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button id="btn-toggle-sigma" class="subtab-btn active">Sigma YAML</button>
+                <button id="btn-toggle-yara" class="subtab-btn">YARA Rule</button>
+              </div>
+            </div>
+            <div style="position:relative;">
+              <pre id="detection-rule-content" class="code-block" style="min-height:160px;"></pre>
+              <button id="btn-copy-rule" class="btn btn-secondary" style="position:absolute; top:8px; right:8px; padding:4px 8px; font-size:11px;">
+                Copy Rule
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- Tab 5: Final Incident Report -->
+        <div id="tab-5" class="tab-content">
+          <section class="glass-panel section-card">
+            <div class="section-head">
+              <div class="section-title">
+                <span>Export-Ready Incident Documentation</span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button id="btn-copy-ticket" class="btn btn-primary" style="padding:5px 12px; font-size:11px;">
+                  📋 Copy Ticket
+                </button>
+                <button id="btn-download-md" class="btn btn-secondary" style="padding:5px 10px; font-size:11px;">
+                  ⬇ .md Report
+                </button>
+                <button id="btn-download-json" class="btn btn-secondary" style="padding:5px 10px; font-size:11px;">
+                  ⬇ SOAR JSON
+                </button>
+              </div>
+            </div>
+            <div id="ticket-display" style="background:var(--bg-inset); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); font-family:var(--font-mono); font-size:12px; color:#cbd5e1; line-height:1.7; white-space:pre-wrap;"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay">
+      <div class="glass-panel modal-card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <h3 style="font-size:15px; font-weight:700; color:#fff;">⚙ Engine & Intelligence Settings</h3>
+          <button id="btn-close-settings" class="btn-icon" style="cursor:pointer;">✕</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Threat Intelligence Engine Mode</label>
+          <select id="setting-provider" class="form-select">
+            <option value="offline">Built-in Expert Heuristic Engine (100% Offline / Air-Gapped)</option>
+            <option value="gemini">Google Gemini API (Generative Threat Hunter)</option>
+            <option value="openai">OpenAI / Compatible Endpoint (GPT-4o / Ollama)</option>
+          </select>
+        </div>
+
+        <div id="api-key-group" class="form-group" style="display:none;">
+          <label class="form-label">API Key</label>
+          <input type="password" id="setting-api-key" class="form-input" placeholder="AIzaSy... or sk-...">
+          <div style="font-size:10px; color:var(--text-dimmed); margin-top:4px;">Securely saved in Chrome local storage. Never leaves your browser.</div>
+        </div>
+
+        <div id="model-group" class="form-group" style="display:none;">
+          <label class="form-label">Model Name</label>
+          <input type="text" id="setting-model" class="form-input" value="gemini-1.5-flash" placeholder="gemini-1.5-flash or gpt-4o">
+        </div>
+
+        <div id="endpoint-group" class="form-group" style="display:none;">
+          <label class="form-label">Custom API Endpoint (Ollama / Local LLM)</label>
+          <input type="text" id="setting-endpoint" class="form-input" placeholder="http://localhost:11434/v1/chat/completions">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:20px;">
+          <button id="btn-save-settings" class="btn btn-primary">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOC T3 Quick Triage</title>
+  <link rel="stylesheet" href="styles/theme.css">
+  <style>
+    body {
+      width: 380px;
+      min-height: 480px;
+      padding: 14px;
+      background: #070a13;
+    }
+    .popup-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .popup-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="popup-header">
+    <div class="popup-title">
+      <img src="icons/icon32.png" alt="SOC" style="width:20px; height:20px; border-radius:4px;">
+      <span>SOC T3 Quick Triage</span>
+    </div>
+    <button id="btn-popup-expand" class="btn btn-secondary" style="padding:4px 8px; font-size:10px;">
+      Side Panel ↗
+    </button>
+  </div>
+
+  <div style="margin-bottom:10px;">
+    <select id="popup-preset" class="preset-dropdown" style="width:100%; margin-bottom:8px;">
+      <option value="">⚡ Load Preset Scenario...</option>
+    </select>
+    <textarea id="popup-input" class="telemetry-textarea" style="min-height:90px;" placeholder="Paste alert/log snippet..."></textarea>
+  </div>
+
+  <div style="display:flex; gap:8px; margin-bottom:12px;">
+    <button id="btn-popup-analyze" class="btn btn-primary" style="flex:1;">
+      Triage Log
+    </button>
+    <button id="btn-popup-workbench" class="btn btn-secondary" title="Open Full Screen Workbench">
+      Console
+    </button>
+  </div>
+
+  <!-- Quick Results -->
+  <div id="popup-results" style="display:none; flex-direction:column; gap:10px;">
+    <div id="popup-verdict" class="verdict-banner status-tp" style="padding:8px 12px;">
+      <div>
+        <span id="popup-badge" class="badge badge-tp">TRUE POSITIVE</span>
+        <div id="popup-threat" style="font-size:11px; font-weight:700; margin-top:4px; color:#fff;"></div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg-inset); padding:10px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); font-size:11px;">
+      <div style="color:var(--text-dimmed); text-transform:uppercase; margin-bottom:4px;">Extracted IoCs & MITRE:</div>
+      <div id="popup-summary" style="color:#cbd5e1; line-height:1.4;"></div>
+    </div>
+
+    <button id="btn-popup-deep" class="btn btn-primary" style="width:100%; font-size:11px; margin-top:4px;">
+      Open Full 5-Step Deep Hunter ➔
+    </button>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
